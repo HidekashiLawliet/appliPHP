@@ -1,0 +1,7 @@
+RewriteEngine on
+
+RewriteRule ^views/admin(/|$) - [F,NC,L]
+RewriteRule ^views/.*\.php$ - [F,NC,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [QSA,L]
