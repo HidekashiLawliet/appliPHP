@@ -1,35 +1,21 @@
-# Project Documentation
-
-## Overview
-
-This PHP application is a simple itinerary management system built for a XAMPP environment. The project includes:
-
-- A **login system** with CSRF protection and session management.
-- **Persistent login cookies** for user authentication across requests.
-- An **itinerary creation/edit** interface for authenticated users.
-- A **MariaDB / MySQL backend** with support for a `trajets` table.
-- Test scripts in the `tests/` folder for login flow, itinerary creation, and database driver verification.
-
 # appliPHP
 
-## Environment configuration
+This is a small PHP MVC-style project for managing itineraries. It was built to run locally with XAMPP, Apache, PHP, and MariaDB/MySQL.
 
-Sensitive values should be stored in a local `.env` file and not committed to version control.
-Create `.env` from `.env.example` and set your database credentials and cookie secret.
+The app lets a user log in, keeps their session active with a signed cookie, and gives authenticated users a screen where they can create or edit trips between agencies.
 
-Example:
+## What Is Inside
 
-```env
-DB_HOST=localhost
-DB_NAME=tpak
-DB_USER=root
-DB_PASS=AdminRoot13
-AUTH_COOKIE_SECRET=ChangeThisBeforeProduction
-```
+- A login flow with CSRF protection and PHP sessions.
+- A persistent login cookie, signed with HMAC-SHA256.
+- An itinerary form for creating and updating trips.
+- A MariaDB/MySQL database connection through PDO.
+- A `trajets` table that is created automatically when needed.
+- A few CLI test scripts for login, itinerary creation, and database driver checks.
 
 ## Project Structure
 
-```
+```text
 index.php
 README.md
 backend/
@@ -43,15 +29,10 @@ data/
   jeu-d-essais/
     agences.txt
     users.txt
-  visuels/
 tests/
   test_login.php
   test_create_itinerary.php
   test_db_drivers.php
-text/
-  consignes.txt
-  explication.txt
-  pdftexteexplaination
 views/
   404.php
   create_itinerary.php
@@ -62,209 +43,114 @@ views/
   login.php
 ```
 
-## Main Components
+## Local Setup
 
-### `backend/config.php`
+You need:
 
-Configuration file for database connection and authentication constants.
+- XAMPP with Apache and PHP.
+- MariaDB or MySQL.
+- The PHP PDO MySQL extension, usually `pdo_mysql`.
+- The same PHP installation available in the terminal if you want to run the tests.
 
-- `DB_HOST`: database host, usually `localhost`.
-- `DB_NAME`: default database name, currently `tpak`.
-- `DB_USER`: database username, currently `root`.
-- `DB_PASS`: database password, currently `AdminRoot13`.
-- `AUTH_COOKIE_SECRET`: secret used to sign persistent login cookies.
+Put the project in your web root, for example:
 
-The file creates a shared PDO instance named `$pdo`.
+```text
+C:\xampp\htdocs\appliPHP
+```
 
-### `backend/process_login.php`
+Then open:
 
-Processes login form submission:
+```text
+http://localhost:80/home.php
+```
 
-1. Starts a session.
-2. Validates email and password are not empty.
-3. Verifies CSRF token using `hash_equals`.
-4. Queries `userdata` table for user credentials.
-5. Compares submitted password to database password.
-6. Regenerates session ID on successful login.
-7. Stores user details in session variables and `$_SESSION['user']`.
-8. Sets a persistent authentication cookie via `auth_cookie_set()`.
-9. Redirects the user to `/home.php`.
+Depending on your Apache configuration, the URL may be slightly different.
 
-### `backend/auth_cookie.php`
+## Environment File
 
-Manages persistent login cookies:
+Database credentials and cookie secrets should live in a local `.env` file. Start by copying `.env.example`:
 
-- Creates signed cookies using HMAC-SHA256.
-- Reads and validates cookie payloads.
-- Clears invalid or expired cookies.
-- Restores session from a valid cookie if the user is not already logged in.
+```text
+.env.example -> .env
+```
 
-Cookie settings:
-
-- Name: `user_login`
-- TTL: `86400` seconds (1 day)
-- `Secure` flag set when the request uses HTTPS.
-- `HttpOnly` and `SameSite=Lax` to reduce CSRF risk.
-
-### `backend/trajets_schema.php`
-
-Defines `ensureTrajetsTable(PDO $pdo)` which creates the `trajets` table if needed.
-
-Columns:
-
-- `id`: auto increment primary key.
-- `user_email`: user owner email.
-- `agence_depart`: departure agency.
-- `date_depart`: departure datetime.
-- `agence_arrivee`: arrival agency.
-- `date_arrivee`: arrival datetime.
-- `places_total`: total seats.
-- `places_disponibles`: available seats.
-- `created_at`: automatic timestamp.
-
-## Web Views
-
-### `views/login.php`
-
-Displays the login form with:
-
-- Email input.
-- Password input.
-- Hidden CSRF token field.
-- Displays session error messages.
-
-### `views/create_itinerary.php`
-
-Allows authenticated users to create or edit itineraries.
-
-Key features:
-
-- Ensures the user is authenticated via session or persistent cookie.
-- Loads the current user profile from `userdata`.
-- Reads agency names from `data/jeu-d-essais/agences.txt`.
-- Validates:
-     - `agence_depart` and `agence_arrivee` are set.
-     - Departure and arrival agencies are different.
-     - Dates are valid and arrival is after departure.
-     - `places_total` is at least 1.
-     - `places_disponibles` is between 0 and `places_total`.
-- Inserts or updates `trajets` records.
-
-## Database Details
-
-### Environment variables
-
-The application can load sensitive credentials from a local `.env` file in the project root.
-Copy `.env.example` to `.env` and set your database login and cookie secret there.
-
-Example `.env` entries:
+Example:
 
 ```env
 DB_HOST=localhost
 DB_NAME=tpak
 DB_USER=root
 DB_PASS=AdminRoot13
-AUTH_COOKIE_SECRET=ChangeThisBeforeProduction
+AUTH_COOKIE_SECRET=ChangeThisBeforeProduction   bn
 ```
 
-The `.env` file is ignored by `.gitignore` and should not be committed.
+The `.env` file is ignored by Git, so it should stay local to your machine.
 
-### MariaDB / MySQL
+## Database
 
-The application uses MariaDB/MySQL through PDO.
-
-Connection example from `backend/config.php`:
-
-```php
-$pdo = new PDO(
-    "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
-    DB_USER,
-    DB_PASS,
-    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-);
-```
-
-### `userdata` table
-
-This table stores user login data.
-
-Required columns:
+The app expects a MariaDB/MySQL database with a `userdata` table for accounts. The login code uses these fields:
 
 - `email`
 - `password`
 - `nom`
 - `prenom`
 - `admin`
-- Optional `tel` field is used in some tests.
+- `tel`, used by some tests
 
-### `trajets` table
+Trips are stored in the `trajets` table. Its schema is defined in `backend/trajets_schema.php`, and the app can create the table if it does not exist yet.
 
-Stores trip records.
+Each trip stores:
 
-The schema is defined in `backend/trajets_schema.php`.
+- the user email
+- departure agency and date
+- arrival agency and date
+- total seats
+- available seats
+- creation date
 
-### Example default passwords
+Agency names are loaded from:
 
-According to project notes, passwords are provided by HR.
-For local testing, the default password can be used as:
+```text
+data/jeu-d-essais/agences.txt
+```
 
-- `Password123!`
+## Main Files
 
-## Tests
+`backend/config.php` loads the database configuration and creates the shared PDO connection.
 
-Three CLI PHP tests are included in the `tests/` folder.
+`backend/process_login.php` handles login form submissions. It checks the CSRF token, validates the user against `userdata`, starts the session, and creates the persistent login cookie.
 
-### `tests/test_db_drivers.php`
+`backend/auth_cookie.php` creates, validates, and clears the signed login cookie. The cookie is named `user_login` and lasts one day.
 
-- Lists available PDO drivers.
-- Attempts MariaDB/MySQL connection using `backend/config.php`.
-- Falls back to SQLite in-memory if MySQL/MariaDB driver is not available.
+`backend/trajets_schema.php` contains the helper that creates the `trajets` table.
 
-Run:
+`views/login.php` displays the login form.
+
+`views/create_itinerary.php` handles the itinerary form. It checks that the user is logged in, loads agencies, validates the submitted dates and seat counts, then inserts or updates the trip.
+
+## Running Tests
+
+The tests are simple PHP scripts in the `tests/` folder.
+
+Check PDO drivers and the database connection:
 
 ```bash
 php tests/test_db_drivers.php
 ```
 
-### `tests/test_login.php`
-
-- Simulates login form submission.
-- Creates a test user in SQLite or fallback array storage.
-- Verifies CSRF token, password check, session variables, and persistent cookie creation.
-- Cleans up the test user before exiting.
-
-Run:
+Test the login flow:
 
 ```bash
 php tests/test_login.php
 ```
 
-### `tests/test_create_itinerary.php`
-
-- Simulates an authenticated user.
-- Loads agencies from `data/jeu-d-essais/agences.txt`.
-- Validates itinerary form input rules.
-- Inserts a test `trajets` record.
-- Cleans up test data before exit.
-
-Run:
+Test itinerary validation and creation:
 
 ```bash
 php tests/test_create_itinerary.php
 ```
 
-## Setup and Usage
-
-### Requirements
-
-- XAMPP with Apache and PHP.
-- MariaDB/MySQL server.
-- PHP PDO extension for MySQL: `pdo_mysql`.
-- The app uses the CLI PHP binary for tests, so configure the same PHP installation as Apache.
-
-### Enable `pdo_mysql`
-
-In `php.ini`:
+If `pdo_mysql` is missing, enable it in `php.ini`:
 
 ```ini
 extension=pdo_mysql
@@ -273,42 +159,24 @@ extension=mysqli
 
 Then restart Apache.
 
-### Start the app
+## Test Login Notes
 
-Place the project in your web root, for example:
+The project notes say passwords are provided by HR. For local testing, the default password can be:
 
-```
-C:\xampp\htdocs\
-```
-
-Open in browser:
-
-```
-http://localhost/login.php
+```text
+Password123!
 ```
 
-### Login process
+## Security Notes
 
-1. Enter email and password.
-2. CSRF token is verified.
-3. User credentials are checked against `userdata`.
-4. Session and persistent cookie are created.
-5. User is redirected to `home.php`.
+This project is still a learning/local project, so a few things should be improved before anything close to production:
 
-### Itinerary creation
+- Passwords are currently compared as plain text. Use `password_hash()` and `password_verify()` instead.
+- Change `AUTH_COOKIE_SECRET` to a strong private value.
+- Keep `.env` out of Git.
+- Use HTTPS if persistent login cookies are enabled outside local development.
 
-1. User must be authenticated.
-2. `create_itinerary.php` reads valid agencies from `data/jeu-d-essais/agences.txt`.
-3. The user submits trip details.
-4. The app validates and stores the trip in `trajets`.
-
-## Notes
-
-- The project currently stores passwords in plaintext and compares them directly.
-- For production, use password hashing (`password_hash`, `password_verify`) and secure cookie secrets.
-- Update `AUTH_COOKIE_SECRET` before deployment.
-
-## Files to Review
+## Useful Files To Review
 
 - `backend/config.php`
 - `backend/process_login.php`
@@ -319,7 +187,3 @@ http://localhost/login.php
 - `tests/test_login.php`
 - `tests/test_create_itinerary.php`
 - `tests/test_db_drivers.php`
-
----
-
-This document was generated to explain the project architecture, database setup, test coverage, and usage instructions.
