@@ -1,0 +1,39 @@
+@use 'variables' as *;
+
+// Tables with rounded top corners, as on the mock-ups.
+.app-table {
+    overflow: hidden;
+    border-radius: $navbar-radius $navbar-radius 0 0;
+
+    thead th {
+        font-weight: 600;
+    }
+}
+
+// Icon buttons (details / edit / delete) of the trip list.
+.app-actions {
+    .btn-link {
+        color: $color-dark;
+        text-decoration: none;
+
+        &:hover {
+            color: $color-text-muted;
+        }
+
+        &.text-danger:hover {
+            color: $color-danger !important;
+        }
+    }
+
+    .bi {
+        font-size: 1.1rem;
+    }
+}
+
+.alert-success {
+    border-left: 4px solid $color-success;
+}
+
+.alert-danger {
+    border-left: 4px solid $color-danger;
+}

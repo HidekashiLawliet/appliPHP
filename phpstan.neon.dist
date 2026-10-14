@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+        - public/index.php
+        - config
+        - bin
+    excludePaths:
+        # Templates: plain PHP/HTML using $this (the View) and variables passed by
+        # the controller; their types are documented with @var at the top of each file.
+        - src/Views
+    tmpDir: var/phpstan

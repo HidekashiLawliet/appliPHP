@@ -1,3 +1,17 @@
-*.txt
-/text
+# Dependencies (reinstalled with composer install / npm install)
+/vendor/
+/node_modules/
+
+# Local configuration: credentials stay on the machine
 .env
+.env2
+
+# Caches and downloaded tools
+/var/
+/tools/
+
+# Personal notes
+/text
+*.txt
+# ...but the test data set IS part of the project
+!data/jeu-d-essais/*.txt

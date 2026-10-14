@@ -1,0 +1,12 @@
+{
+  "name": "touche-pas-au-klaxon",
+  "private": true,
+  "description": "Front-end build: compiles assets/scss into public/css",
+  "scripts": {
+    "build:css": "sass --no-source-map --style=compressed assets/scss/app.scss public/css/app.css",
+    "watch:css": "sass --watch assets/scss/app.scss public/css/app.css"
+  },
+  "devDependencies": {
+    "sass": "^1.97.3"
+  }
+}

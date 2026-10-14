@@ -1,7 +1,4 @@
-RewriteEngine on
-
-RewriteRule ^views/admin(/|$) - [F,NC,L]
-RewriteRule ^views/.*\.php$ - [F,NC,L]
-
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ index.php [QSA,L]
+# The document root must be the public/ folder (see README).
+# If Apache serves the project root by mistake, block everything so that
+# .env, src/ and database/ can never be downloaded.
+Require all denied

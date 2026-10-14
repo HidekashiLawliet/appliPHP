@@ -1,0 +1,4 @@
+// Entry point compiled to public/css/app.css (npm run build:css).
+// Bootstrap itself is loaded from its CDN; this file only holds the charter.
+@use 'layout';
+@use 'components';

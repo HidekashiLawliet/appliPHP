@@ -1,0 +1,42 @@
+@use 'variables' as *;
+
+// Sticky footer: the main area grows, the footer stays at the bottom.
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// Light navigation bar with a rounded dark border.
+.app-navbar {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: $color-navbar-bg;
+    border: $navbar-border-width solid $color-border;
+    border-radius: $navbar-radius;
+
+    .navbar-brand {
+        font-weight: 500;
+        color: $color-dark;
+    }
+
+    .navbar-text {
+        color: $color-dark;
+    }
+}
+
+.app-main {
+    flex: 1;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+
+    h1 {
+        font-weight: 400;
+    }
+}
+
+.app-footer {
+    padding: $footer-padding;
+    color: $color-dark;
+    text-align: center;
+}

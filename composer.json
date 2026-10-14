@@ -1,0 +1,54 @@
+{
+    "name": "appliphp/touche-pas-au-klaxon",
+    "description": "Intranet de covoiturage entre agences - application PHP MVC orientee objet.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "izniburak/router": "^3.1",
+        "vlucas/phpdotenv": "^5.7"
+    },
+    "require-dev": {
+        "ext-pdo_sqlite": "*",
+        "phpstan/phpstan": "^2.3",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "db:install": "php bin/install.php",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "php -S localhost:8000 -t public"
+        ],
+        "test": "phpunit",
+        "stan": "phpstan analyse --memory-limit=512M",
+        "docs": "php bin/docs.php",
+        "check": [
+            "@stan",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "db:install": "Cree la base DB_NAME du .env puis execute les scripts SQL de database/",
+        "serve": "Lance le serveur de developpement sur http://localhost:8000",
+        "test": "Lance les tests PHPUnit",
+        "stan": "Analyse statique PHPStan (niveau 8)",
+        "docs": "Genere la documentation PHPDoc dans docs/api",
+        "check": "PHPStan + PHPUnit"
+    }
+}
